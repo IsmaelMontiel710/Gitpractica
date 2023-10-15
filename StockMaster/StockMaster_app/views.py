@@ -16,6 +16,9 @@ import base64
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Q
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 # Create your views here.
 
 class CustomUserCreationForm(UserCreationForm):
@@ -138,10 +141,7 @@ def usuarios(request):
     else:
         return redirect('/actividades')
     
-@login_required(login_url='signin')
-def exit(request):
-    logout(request)
-    return redirect('/actividades')
+
 
 @login_required(login_url='signin')
 def pro(request):
@@ -401,3 +401,27 @@ def eliminar_categoria(request, categoria_id):
 def exit(request):
     logout(request)
     return redirect('home')
+
+def login_view(request):
+    return render(request, 'entrada.html', {})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+@login_required(login_url='signin')
+def home_view(request):
+    return render(request, 'main.html', {} )
+
+def find_user_view(request):
+    return
+
+@login_required(login_url='signin')
+def exit(request):
+    logout(request)
+    return redirect('home')
+
+@login_required(login_url='signin')
+def exit(request):
+    logout(request)
+    return redirect('/actividades')

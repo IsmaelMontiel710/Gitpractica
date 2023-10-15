@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block script %}
+  <script src="{% static 'js/login.js' %}" defer></script>
+{% endblock script %}
+
+{% block content %}
+  <video autoplay="true" id="video-element"></video>
+  
+  <div id="img-element"></div>
+  <div>
+    <button class="btn btn-primary" id="capture-btn">Toma la foto crack</button>
+    <button class="btn btn-info" id="reload-btn">recargar</button>
+  </div>
+
+  <script> 
+    const video = document.getElementById('video-element')
+ 
+    if(navigator.mediaDevices.getUserMedia){
+        navigator.mediaDevices.getUserMedia({video: true})
+        .then((stream) => {
+            video.srcObject = stream
+        })
+    }
+
+
+
+  </script>
+{% endblock content %}

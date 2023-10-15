@@ -44,5 +44,9 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('signin/', views.signin, name='signin'),
     path('logout/', views.exit, name='exit'),
-    path('buscar_productos/', views.buscar_productos, name='buscar_productos'),
+    path('login/', views.login_view, name='login'),
+    path('logout2/', views.logout_view, name='logout2'),
+    path('classify/', views.find_user_view, name='classify'),
+    path('home2/', views.home_view, name='home2')
+   
     ]
