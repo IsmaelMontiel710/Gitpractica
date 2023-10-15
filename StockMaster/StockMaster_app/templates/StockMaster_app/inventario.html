@@ -1,0 +1,120 @@
+{% extends "./base.html" %}
+{% block body %}
+{% load static %}
+<head>
+    <link  rel="stylesheet" href="{% static 'css/inventario.css' %}">
+</head>
+<main>
+    <div class="recent-orders">
+        <h1>INVENTARIO</h1>
+        <form method="get">
+            <div class="principal">
+                <div class="encabezado">
+
+                    <label for="categoria" class="apartado">Categoría:</label>
+                    <select name="categoria" id="categoria" class="form-control" required>
+                        <option value="" disabled selected>-- Selecciona una categoría --</option>
+                        {% for categoria in Categoria %}
+                            <option value="{{ categoria.nombre }}">{{ categoria.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="encabezado2">
+                    <button type="submit" class="btn btn-filter">
+                        <span class="material-symbols-outlined">tune</span>
+                        <p class="filter">Filtrar</p>
+                    </button>
+                    <a type="submit" href="inventario" class="btn btn-all">
+                        <span class="material-symbols-outlined">grid_on</span>
+                        <p class="filter">Mostrar todo</p>
+                    </a>
+                </div>
+                <div class="search-bar">
+                    <label for="search-input"></label><input type="text" id="search-input" placeholder="Buscar productos..." oninput="convertToUppercase()">
+                    <i class="fas fa-search" id="search-icon"></i>
+                </div>
+            </div>
+        </form>
+        {% for producto in Productos %} 
+        {% if producto.status %}
+            {% if not request.GET.categoria or producto.id_categorias.nombre == request.GET.categoria %}
+            <div class="prod">
+                <div class="make-3D-space">
+                    <div class="product-card">
+                        <div class="product-front">
+                            <div class="shadow"></div>
+                            <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}"/>
+                            <div class="image_overlay"></div>
+                            <div class="stats">
+                                <div class="stats-container">
+                                    <span class="product_price">${{ producto.precio }}</span>
+                                    <span class="product_name">{{ producto.nombre }}</span>
+                                    <p><strong style="color: black;">CATEGORIA: {{ producto.id_categorias.nombre }}</strong></p>
+                                    <div class="product-options">
+                                        <strong>CODIGO</strong>
+                                        <span>{{ producto.codigo }}</span>
+                                        <strong>MARCA</strong>
+                                        <span>{{ producto.marca }}</span>
+                                        <strong>CANTIDAD DISPONIBLES</strong>
+                                        <span>{{ producto.cantPro }} unidades</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endif %}
+        
+        {% endfor %}
+    </div>
+</main>
+
+<div class="right2" >
+    <div class="top">
+        <button id="menu-btn"><span class="material-symbols-outlined">menu</span>
+
+        </button>
+        <button id="themeToggleBtn" style="display: block;">
+            <i id="sunIcon" class="fas fa-sun"></i>
+            <i id="moonIcon" class="fas fa-moon"></i>
+        </button>
+        <div class="profile">
+            {% if request.user.is_authenticated %}
+                <div class="info">
+                    <p>hey, <b>{{ user.username}}</b></p>
+                    {% if request.user.is_superuser %}
+                        <small class="text-muted">Admin</small>
+                    {% else %}
+                        <small class="text-muted">Empleado</small>
+                    {% endif %}
+
+                </div>
+                <div class="profile-photo">
+                    {% if request.user.is_superuser %}
+                        <i class="fa-solid fa-user-tie"></i>
+                    {% else %}
+                        <i class="fa-solid fa-user"></i>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="{% static 'js/search.js' %}"></script>
+<script>
+    $(document).ready(function(){
+        // show stats on Mouseover
+        $('.product-card').hover(function(){
+            $(this).addClass('animate');
+            $('div.carouselNext, div.carouselPrev').addClass('visible');
+        }, function(){
+            $(this).removeClass('animate');
+            $('div.carouselNext, div.carouselPrev').removeClass('visible');
+        });
+    });
+</script>
+
+{% endblock %}

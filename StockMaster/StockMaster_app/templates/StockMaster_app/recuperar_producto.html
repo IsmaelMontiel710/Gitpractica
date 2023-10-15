@@ -1,0 +1,119 @@
+{% extends "./base.html" %}
+{% block body %}
+{% load static %}
+<head> 
+    <link  rel="stylesheet" href="{% static 'usuarios/css/recuperarProducto.css' %}">
+</head>
+
+<main>
+    <div class="right">
+        <div class="top">
+            <button id="menu-btn"><span class="material-symbols-outlined">menu</span>
+
+            </button>
+            <button id="themeToggleBtn" style="display: block;">
+                <i id="sunIcon" class="fas fa-sun"></i>
+                <i id="moonIcon" class="fas fa-moon"></i>
+            </button>
+            <div class="profile">
+                {% if request.user.is_authenticated %}
+                    <div class="info">
+                        <p>hey, <b>{{ user.username}}</b></p>
+                        {% if request.user.is_superuser %}
+                            <small class="text-muted">Admin</small>
+                        {% else %}
+                            <small class="text-muted">Empleado</small>
+                        {% endif %}
+                            
+                    </div>
+                    <div class="profile-photo">
+                        {% if request.user.is_superuser %}
+                            <i class="fa-solid fa-user-tie"></i>
+                        {% else %}
+                            <i class="fa-solid fa-user"></i>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <h1>Productos dados de baja</h1>
+    <br>
+    <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Buscar productos..." oninput="convertToUppercase()">
+        <i class="fas fa-search" id="search-icon"></i>
+    </div>
+    <br><br>
+    <div class="messages-container">
+        {% for message in messages %}
+            <div class="alert alert-custom" role="alert">
+                <strong>{{ message }}</strong>
+                <button type="button" class="btn-close" aria-label="Close" onclick="dismissMessage(this)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="recent-orders">
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Marca</th>
+                    <th>Categoria</th>
+                    <th>Elimino Usuario</th>
+                    <th>Fecha</th>
+                    <th colspan="2">Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in Productos %}
+                    {% if c.status %}
+                    {% else %}
+                        <tr>
+                            
+                            <td>{{forloop.counter}}</td>
+                            <td>{{ c.codigo }} </td>
+                            <td>{{ c.nombre }}</td>
+                            <td>{{ c.marca}}</td>
+                            <td>{{ c.id_categorias.nombre }}</td>
+                            <td>{{ c.username }}</td>
+                            <td>{{ c.hora_baja }}</td>
+                            <td class="edita"><a href="statusre/{{c.idproducts}}" class="btn btn-info">Recuperar</a></td>
+                            <td class="elimina"><a href="recuperar_producto/eliminaInventario/{{c.idproducts}}" class="btn btn-danger btnEliminacion">Eliminar</a></td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+<script>
+    function validarNumeros(input) {
+        // Obtener el valor actual del campo de entrada
+        let valor = input.value;
+
+        // Reemplazar cualquier caracter que no sea un número con una cadena vacía
+        valor = valor.replace(/[^0-9]/g, '');
+
+        // Limitar la longitud del valor a 7 caracteres
+        if (valor.length > 7) {
+            valor = valor.slice(0, 7);
+        }
+
+        // Actualizar el valor del campo de entrada con la versión filtrada
+        input.value = valor;
+    }
+</script>
+
+<script>
+    // Función para eliminar el mensaje al hacer clic en el botón de cerrar
+    function dismissMessage(button) {
+        const messageContainer = button.closest('.alert');
+        if (messageContainer) {
+            messageContainer.remove();
+        }
+    }
+</script>
+{% endblock %}
