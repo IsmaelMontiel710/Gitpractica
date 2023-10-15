@@ -13,12 +13,19 @@ from django.core.files import File
 from .models import Productos, Mensajes, Categoria
 from django.http.response import JsonResponse
 import base64
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
+from .utils import is_ajax, classify_face
+import base64
+from logs.models import Log
+from django.core.files.base import ContentFile
+from django.contrib.auth.models import User
+from profiles.models import Profile
 # Create your views here.
 
 class CustomUserCreationForm(UserCreationForm):
@@ -414,7 +421,31 @@ def home_view(request):
     return render(request, 'main.html', {} )
 
 def find_user_view(request):
-    return
+    if is_ajax(request):
+        photo = request.POST.get('photo')
+        _, str_img = photo.split(';base64')
+
+        # print(photo)
+        decoded_file = base64.b64decode(str_img)
+        print(decoded_file)
+
+        x = Log()
+        x.photo.save('upload.png', ContentFile(decoded_file))
+        x.save()
+
+        res = classify_face(x.photo.path)
+        if res:
+            user_exists = User.objects.filter(username=res).exists()
+            if user_exists:
+                user = User.objects.get(username=res)
+                profile = Profile.objects.get(user=user)
+                x.profile = profile
+                x.save()
+
+                login(request, user)
+                return JsonResponse({'success': True})
+        return JsonResponse({'success': False})
+    
 
 @login_required(login_url='signin')
 def exit(request):
